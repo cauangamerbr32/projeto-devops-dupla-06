@@ -1,0 +1,23 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependências
+        run: pip install -r app/requirements.txt
+      - name: Rodar testes
+        run: cd app && python -m pytest -q
+  construir-imagem:
+    needs: testar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir a imagem (sem publicar)
+        run: docker build -t p2-app:ci .
